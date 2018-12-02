@@ -16,13 +16,13 @@ public class NotificationController {
 
 	@Autowired
 	private NotificationService service;
+
 	
 	@RequestMapping(value = "/notify", method = RequestMethod.POST)
 	public ResponseEntity<NotificationDTO> sendNotification(@RequestBody NotificationDTO dto){
 		System.out.println("** sending notification...");
 		Boolean result = service.sendNotification(dto);
-		dto.setMessage("This is a message");
-		dto.setTopic("This is the topic");
+		service.sendNotification(dto);
 		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
 	

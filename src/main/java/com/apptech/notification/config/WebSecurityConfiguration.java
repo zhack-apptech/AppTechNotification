@@ -1,4 +1,4 @@
-package com.apptech.notification;
+package com.apptech.notification.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
