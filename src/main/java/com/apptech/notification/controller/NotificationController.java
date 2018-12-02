@@ -1,5 +1,9 @@
 package com.apptech.notification.controller;
 
+import java.net.URISyntaxException;
+
+import javax.jms.JMSException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +25,19 @@ public class NotificationController {
 	@RequestMapping(value = "/notify", method = RequestMethod.POST)
 	public ResponseEntity<NotificationDTO> sendNotification(@RequestBody NotificationDTO dto){
 		System.out.println("** sending notification...");
+		try {
 		Boolean result = service.sendNotification(dto);
-		service.sendNotification(dto);
+			service.sendNotification(dto);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JMSException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
 	
