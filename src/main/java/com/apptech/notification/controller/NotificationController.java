@@ -45,8 +45,6 @@ public class NotificationController {
 	public ResponseEntity<NotificationDTO> sendNotice(){
 		System.out.println("** sending notification 2...");
 		NotificationDTO dto = new NotificationDTO();
-		dto.setMessage("This is a message");
-		dto.setTopic("This is the topic");
 		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
 }
