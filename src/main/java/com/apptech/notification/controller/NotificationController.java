@@ -18,15 +18,20 @@ public class NotificationController {
 	private NotificationService service;
 	
 	@RequestMapping(value = "/notify", method = RequestMethod.POST)
-	public ResponseEntity<Boolean> sendNotification(@RequestBody NotificationDTO dto){
+	public ResponseEntity<NotificationDTO> sendNotification(@RequestBody NotificationDTO dto){
 		System.out.println("** sending notification...");
 		Boolean result = service.sendNotification(dto);
-		return new ResponseEntity<>(HttpStatus.OK);
+		dto.setMessage("This is a message");
+		dto.setTopic("This is the topic");
+		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/notice", method = RequestMethod.GET)
-	public ResponseEntity<Boolean> sendNotice(){
+	public ResponseEntity<NotificationDTO> sendNotice(){
 		System.out.println("** sending notification 2...");
-		return new ResponseEntity<>(HttpStatus.OK);
+		NotificationDTO dto = new NotificationDTO();
+		dto.setMessage("This is a message");
+		dto.setTopic("This is the topic");
+		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
 }
