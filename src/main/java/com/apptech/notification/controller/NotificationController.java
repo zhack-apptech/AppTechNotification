@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.apptech.notification.dto.NotificationDTO;
+import com.apptech.notification.service.AnalyticsService;
 import com.apptech.notification.service.NotificationService;
 
 @RestController
@@ -20,6 +21,9 @@ public class NotificationController {
 
 	@Autowired
 	private NotificationService service;
+	
+	@Autowired
+	private AnalyticsService service2;
 
 	
 	@RequestMapping(value = "/notify", method = RequestMethod.POST)
@@ -45,6 +49,8 @@ public class NotificationController {
 	public ResponseEntity<NotificationDTO> sendNotice(){
 		System.out.println("** sending notification 2...");
 		NotificationDTO dto = new NotificationDTO();
+		
 		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
+	
 }
