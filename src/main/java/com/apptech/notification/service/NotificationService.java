@@ -4,9 +4,11 @@ import java.net.URISyntaxException;
 
 import javax.jms.JMSException;
 
+import com.apptech.notification.dto.EventLocationDTO;
 import com.apptech.notification.dto.NotificationDTO;
 
 public interface NotificationService {
 
-	public boolean sendNotification(NotificationDTO dto) throws URISyntaxException, JMSException, Exception;
+	boolean sendNotification(NotificationDTO dto) throws URISyntaxException, JMSException, Exception;
+	boolean sendLocation(EventLocationDTO dto) throws URISyntaxException, JMSException, Exception;
 }

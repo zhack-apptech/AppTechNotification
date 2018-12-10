@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.apptech.notification.dto.EventLocationDTO;
 import com.apptech.notification.dto.NotificationDTO;
 import com.apptech.notification.service.AnalyticsService;
 import com.apptech.notification.service.NotificationService;
@@ -31,7 +32,6 @@ public class NotificationController {
 		System.out.println("** sending notification...");
 		try {
 		Boolean result = service.sendNotification(dto);
-			service.sendNotification(dto);
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -42,6 +42,26 @@ public class NotificationController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return new ResponseEntity<>(dto, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/location", method = RequestMethod.POST)
+	public ResponseEntity<EventLocationDTO> sendLocation(@RequestBody EventLocationDTO dto){
+		System.out.println("** sending location ...");
+		try {
+			Boolean result = service.sendLocation(dto);
+			
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JMSException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
 	

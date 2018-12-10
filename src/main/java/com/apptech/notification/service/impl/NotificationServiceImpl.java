@@ -5,11 +5,13 @@ import static com.apptech.notification.config.ActiveMQConfig.GENERAL_TOPIC;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.jms.BytesMessage;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.MessageNotReadableException;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.Topic;
@@ -18,11 +20,16 @@ import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerFactory;
 import org.apache.activemq.broker.BrokerService;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
+
+import com.apptech.notification.dto.EventLocationDTO;
 import com.apptech.notification.dto.NotificationDTO;
 import com.apptech.notification.service.NotificationService;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.fasterxml.jackson.databind.util.JSONWrappedObject;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
@@ -31,14 +38,13 @@ public class NotificationServiceImpl implements NotificationService {
 	private JmsTemplate jmsTemplate;
 	
 	private static String url = ActiveMQConnection.DEFAULT_BROKER_URL;	// replace when live or remote
+//	private static String url = "tcp://www.apptechgateway.io:61616";	// replace when live or remote
 	
 	@Override
 	public boolean sendNotification(NotificationDTO dto) throws URISyntaxException, JMSException, Exception {
 		// code save to database here
 
 		// broker service setup
-//		BrokerService broker = BrokerFactory.createBroker(new URI("broker:(tcp://localhost:61616)"));
-//		broker.start();
 		Connection connection = null;
 		try {
 		// Producer
@@ -69,13 +75,59 @@ public class NotificationServiceImpl implements NotificationService {
 			if(connection != null) {
 				connection.close();
 			}
-//			broker.stop();
 		}
+	}
+
+	@Override
+	public boolean sendLocation(EventLocationDTO dto) throws URISyntaxException, JMSException, Exception {
+		// code save to database here
+
+		// broker service setup
+		Connection connection = null;
+		try {
+		// Producer
+		ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url); // throws exception required
+		connection = connectionFactory.createConnection();
 		
-//		Destination destination = c
-		// send
-//		jmsTemplate.convertAndSend(GENERAL_TOPIC, dto.getMessage());
-//		return false;
+		//Create a non-transactional session to send JMS message to topic
+		Session session = connection.createSession(false,Session.AUTO_ACKNOWLEDGE);
+		Topic topic = session.createTopic(dto.getTopic());
+		System.out.println("Starting connection to send location... topic: " + dto.getTopic());
+		// start connection
+		connection.start();
+		JSONObject obj = new JSONObject();
+		obj.put("clientId", dto.getClientId());
+		obj.put("clientLatitude", dto.getClientLatitude());
+		obj.put("clientLongitude", dto.getClientLongitude());
+		obj.put("clientTimestamp", dto.getClientTimestamp());
+		obj.put("eventType", dto.getEventType());
+		obj.put("eventDesc", dto.getEventDesc());
+		obj.put("topic", dto.getTopic());
+		
+		
+		String payload = obj.toString();
+		byte[] bytePayload = payload.getBytes("UTF-8");
+		BytesMessage msg = session.createBytesMessage();
+		msg.readBytes(bytePayload);
+		MessageProducer producer = session.createProducer(topic);
+		producer.send(msg);
+		
+		// give time for message to be consumed
+			Thread.sleep(3000);
+			session.close();
+			return true;
+		} catch (MessageNotReadableException e) {
+			System.out.println(e.getMessage());
+			return true;
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		} finally {
+			if(connection != null) {
+				connection.close();
+			}
+		}
 	}
 
 }
